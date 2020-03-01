@@ -1,0 +1,16 @@
+apiVersion: build.knative.dev/v1alpha1
+kind: Build
+metadata:
+  name: application-demo-build
+spec:
+  serviceAccountName: knative-build
+  source:
+    git:
+      url: https://github.com/haoshuwei/appllication-demo.git
+      revision: master
+      
+  template:
+    name: application-demo-template
+    arguments:
+    - name: IMAGE
+      value: registry.cn-hangzhou.aliyuncs.com/haoshuwei24/app-demo:v1

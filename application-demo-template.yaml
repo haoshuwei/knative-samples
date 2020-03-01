@@ -1,0 +1,30 @@
+apiVersion: build.knative.dev/v1alpha1
+kind: BuildTemplate
+metadata:
+  name: application-demo-template
+spec:
+  parameters:
+  - name: IMAGE
+    description: Where to publish the resulting image.
+  - name: DIRECTORY
+    description: The directory containing the build context.
+    default: /workspace
+  - name: DOCKERFILE_NAME
+    description: The name of the Dockerfile
+    default: Dockerfile
+  steps:
+  - name: maven
+    image: maven:3.6.2-jdk-14
+    args: ["mvn", "package", "-B", "-DskipTests"]
+    volumeMounts:
+    - name: mvn-cache
+      mountPath: /root/.m2
+  - name: kaniko
+    image: registry.cn-hangzhou.aliyuncs.com/haoshuwei24/executor:v0.1.0
+    args:
+    - --dockerfile=/${DIRECTORY}/${DOCKERFILE_NAME}
+    - --destination=${IMAGE}
+  volumes:
+  - name: mvn-cache
+    persistentVolumeClaim:
+      claimName: cache
